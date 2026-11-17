@@ -1,0 +1,49 @@
+# 版本控制与 IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# 环境变量与本地密钥
+.env
+.env.*
+!.env.example
+
+# 本地数据与上传
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+storage/uploads
+
+# 前端依赖与构建产物（Docker 内重新构建）
+web/node_modules
+web/dist
+
+# 本地编译产物
+TravelManager
+travelmanager
+TravelManager-*
+*.exe
+*.test
+coverage.out
+*.pem
+*.key
+*.p12
+*.pfx
+
+# 备份、缓存与临时文件
+.backups
+.gocache
+.pnpm-store
+.tmp*
+*.tgz
+*.tar.gz
+*.zip
+*.b64
+
+# 容器文件
+Dockerfile
+docker-compose.yml
+.dockerignore

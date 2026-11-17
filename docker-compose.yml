@@ -1,0 +1,54 @@
+# TravelManager 一键部署
+# 启动：docker compose up -d --build
+# 访问：http://localhost:8080
+# 数据：SQLite 数据库与上传文件保存在命名卷 travelmanager-data
+services:
+  travelmanager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: travelmanager:latest
+    container_name: travelmanager
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      DB_PATH: /data/travelmanager.db
+      UPLOAD_DIR: /data/uploads
+      # 必须在 .env 或部署环境中显式配置为至少 32 位的随机字符串
+      JWT_SECRET: ${JWT_SECRET}
+      # 空数据库首次初始化时必须提供；系统初始化完成后可留空
+      INITIAL_ADMIN_TOKEN: ${INITIAL_ADMIN_TOKEN:-}
+      # 以下配置均可通过 .env 覆盖，未设置时使用默认值
+      APP_VERSION: "${APP_VERSION:-0.1.0}"
+      GIN_MODE: "${GIN_MODE:-release}"
+      TOKEN_TTL_HOURS: "${TOKEN_TTL_HOURS:-72}"
+      SKIP_AUTO_MIGRATE: "${SKIP_AUTO_MIGRATE:-false}"
+      DB_TYPE: "${DB_TYPE:-sqlite}"
+      DB_HOST: "${DB_HOST:-127.0.0.1}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_NAME: "${DB_NAME:-TravelManager}"
+      DB_USER: "${DB_USER:-TravelManager}"
+      DB_PASSWORD: "${DB_PASSWORD:-}"
+      DB_CHARSET: "${DB_CHARSET:-utf8mb4}"
+      UPLOAD_MAX_SIZE_MB: "${UPLOAD_MAX_SIZE_MB:-5}"
+      UPLOAD_ALLOWED_EXTS: "${UPLOAD_ALLOWED_EXTS:-jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx}"
+      SYSTEM_NAME: "${SYSTEM_NAME:-团队档案管理系统}"
+      TEAM_TYPES: "${TEAM_TYPES:-研学,团建,旅游团}"
+      EXPENSE_CATEGORIES: "${EXPENSE_CATEGORIES:-门票,住宿,餐饮,景区内部消费}"
+      OAUTH_MODE: "${OAUTH_MODE:-rainbow}"
+      OAUTH_PROVIDERS: "${OAUTH_PROVIDERS:-qq,wechat,weibo}"
+      CORS_ALLOW_ORIGINS: "${CORS_ALLOW_ORIGINS:-*}"
+      TZ: Asia/Shanghai
+    volumes:
+      - travelmanager-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8080/api/system/info"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  travelmanager-data:
